@@ -1,40 +1,32 @@
 # ScreenTask
 ------------------------------
-## 📢 New Version Released: [Info & Download](https://github.com/EslaMx7/ScreenTask/releases) 🔥
-Screen sharing made easy!
-Share your screen across local devices without internet.
+## v1.3 release: [Info & Download](https://github.com/mchampanis/ScreenTask/releases)
 
-## Windows Releases :
-### > [Download Installer (750 KB)](https://github.com/EslaMx7/ScreenTask/releases/download/v1.1/ScreenTask.v1.1.exe)
+Screen sharing made easy! Share your screen across local devices without internet.
 
-### > [Download ZIP Archive (292 KB)](https://github.com/EslaMx7/ScreenTask/releases/download/v1.1/ScreenTask.v1.1.zip)
+**Cross-Platform Version for (Linux & OSX) Written in Java:** [**Download page**](https://github.com/ahmadomar/ScreenTask)
 
-
-**Cross-Platform Version for ( Linux - OSX ) Written in Java :** [**Download Page**](https://github.com/ahmadomar/ScreenTask)
-
-------------------------------
-### List Of Features : 
-- Share Your Screen Inside a Network Without Internet Connection
-- WebUI So Clients Doesn't Need Any Additional Software (Only Web Browser)
-- Make Your Session Private Using Basic Authentication (User::Password)
-- Unlimited Number Of Connected Clients
+### List Of Features
+- Share your screen on local network
+- WebUI so no additional client software needed - access via web browser
+- Basic HTTP authentication support
+- Unlimited number clients
 - Multiple screens support
-- Automatic server starting
 
-------------------------------
+### v1.3 changes
+- firewall rules created programmatically
+- better tray icon logic
+- new icon & server on/off status indicated in taskbar
+- started cleaning up code
+- cleaned up web ui, removed unneeded header and footer
+- changed javascript timer to behave better on phone browsers
 
-### Application Interface : 
-![Screen Task Main Window](https://raw.githubusercontent.com/EslaMx7/ScreenTask/master/ScreenTask/ScreenTaskMain.v1.1.png)
+> Mobile view support [Thanks to Bootstrap 3]
+> .NET Framework 4.8 required [Download here](https://dotnet.microsoft.com/en-us/download/dotnet-framework/net48)
+> Works On Windows Vista, 7, 8, 10, 11 (v1.3 tested only on Windows 11)
 
-### Web UI :
-![Screen Task WebUI](https://raw.githubusercontent.com/EslaMx7/ScreenTask/master/ScreenTask/ScreenTaskWebUI.png)
+### License
+Screen Task is released under the GPL v3 (or later) license: http://www.gnu.org/licenses/gpl-3.0.html
 
-
-> Mobile View Supported [Thanks to Bootstrap 3]
-
-> .NET Framework 4.5 Required [Download NOW!](http://www.microsoft.com/en-eg/download/details.aspx?id=30653)
-
-> Works On Windows Vista , 7 , 8 | Windows XP Not Supported Since The .NET 4.5 Not Supported On It.
-
-### License :
-Screen Task is released under the GPL v3 (or later) license, see : http://www.gnu.org/licenses/gpl-3.0.html
+### Original project
+https://github.com/EslaMx7/ScreenTask

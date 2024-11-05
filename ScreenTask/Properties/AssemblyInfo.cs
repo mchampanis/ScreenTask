@@ -9,8 +9,8 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("Screen sharing made easy")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Eslam Hamouda")]
-[assembly: AssemblyProduct("ScreenTask v1.1")]
-[assembly: AssemblyCopyright("Copyright ©  Eslam Hamouda 2014-2020")]
+[assembly: AssemblyProduct("ScreenTask v1.3")]
+[assembly: AssemblyCopyright("Copyright © Eslam Hamouda 2014-2020")]
 [assembly: AssemblyTrademark("Eslam Hamouda")]
 [assembly: AssemblyCulture("")]
 
@@ -32,5 +32,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.2.0.0")]
-[assembly: AssemblyFileVersion("1.2.0.0")]
+[assembly: AssemblyVersion("1.3.0.0")]
+[assembly: AssemblyFileVersion("1.3.0.0")]

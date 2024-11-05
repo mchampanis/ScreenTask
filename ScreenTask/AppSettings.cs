@@ -18,8 +18,6 @@ namespace ScreenTask
         public int SelectedScreenIndex { get; set; }
         public bool IsShowMouseEnabled { get; set; }
         public bool IsAutoStartServerEnabled { get; set; }
-        public bool IsStartMinimizedEnabled { get; set; }
         public int ImageQuality { get; set; }
-        public bool AllowPublicAccess { get; set; }
     }
 }

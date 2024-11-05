@@ -11,12 +11,8 @@
 [Dd]ebug/
 [Rr]elease/
 x64/
-build/
 [Bb]in/
 [Oo]bj/
-
-# Enable "build/" folder in the NuGet Packages folder since NuGet packages use it for MSBuild targets
-!packages/*/build/
 
 # MSTest test Results
 [Tt]est[Rr]esult*/
@@ -24,6 +20,7 @@ build/
 
 *_i.c
 *_p.c
+*_i.h
 *.ilk
 *.meta
 *.obj
@@ -44,6 +41,7 @@ build/
 .builds
 *.pidb
 *.log
+*.svclog
 *.scc
 
 # Visual C++ cache files
@@ -65,42 +63,24 @@ ipch/
 # ReSharper is a .NET coding add-in
 _ReSharper*/
 *.[Rr]e[Ss]harper
-
-# TeamCity is a build add-in
-_TeamCity*
-
-# DotCover is a Code Coverage Tool
-*.dotCover
-
-# NCrunch
-*.ncrunch*
-.*crunch*.local.xml
-
-# Installshield output folder
-[Ee]xpress/
-
-# DocProject is a documentation generator add-in
-DocProject/buildhelp/
-DocProject/Help/*.HxT
-DocProject/Help/*.HxC
-DocProject/Help/*.hhc
-DocProject/Help/*.hhk
-DocProject/Help/*.hhp
-DocProject/Help/Html2
-DocProject/Help/html
+*.DotSettings.user
 
 # Click-Once directory
 publish/
 
 # Publish Web Output
 *.Publish.xml
+*.pubxml
+*.azurePubxml
 
 # NuGet Packages Directory
 ## TODO: If you have NuGet Package Restore enabled, uncomment the next line
-#packages/
+packages/
+## TODO: If the tool you use requires repositories.config, also uncomment the next line
+!packages/repositories.config
 
 # Windows Azure Build Output
-csx
+csx/
 *.build.csdef
 
 # Windows Store app package directory
@@ -111,11 +91,12 @@ sql/
 *.Cache
 ClientBin/
 [Ss]tyle[Cc]op.*
+![Ss]tyle[Cc]op.targets
 ~$*
 *~
 *.dbmdl
 *.[Pp]ublish.xml
-*.pfx
+
 *.publishsettings
 
 # RIA/Silverlight projects
@@ -131,12 +112,6 @@ UpgradeLog*.htm
 # SQL Server files
 App_Data/*.mdf
 App_Data/*.ldf
-
-
-#LightSwitch generated files
-GeneratedArtifacts/
-_Pvt_Extensions/
-ModelManifest.xml
 
 # =========================
 # Windows detritus
@@ -154,5 +129,7 @@ $RECYCLE.BIN/
 
 # Mac desktop service store files
 .DS_Store
-/.vs/ScreenTask
-/node_modules
+
+_NCrunch*
+
+.vs
