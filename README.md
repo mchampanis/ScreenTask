@@ -6,7 +6,7 @@ Screen sharing made easy! Share your screen across local devices without interne
 
 **Cross-Platform Version for (Linux & OSX) Written in Java:** [**Download page**](https://github.com/ahmadomar/ScreenTask)
 
-### List Of Features
+### Features
 - Share your screen on local network
 - WebUI so no additional client software needed - access via web browser
 - Basic HTTP authentication support
