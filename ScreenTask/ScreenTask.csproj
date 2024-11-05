@@ -117,8 +117,6 @@
     <Content Include="screenicon.ico" />
     <Content Include="screentask.ico" />
     <None Include="screentask.png" />
-    <Content Include="ScreenTaskMain.png" />
-    <Content Include="ScreenTaskWebUI.png" />
     <None Include="screentask_logo.png" />
     <Content Include="WebServer\bootstrap.min.css">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -149,7 +147,7 @@
       <Isolated>False</Isolated>
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </COMReference>
-  </ItemGroup>  
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
