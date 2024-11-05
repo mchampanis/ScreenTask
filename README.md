@@ -1,6 +1,6 @@
 # ScreenTask
 ------------------------------
-## v1.3 release: [Info & Download](https://github.com/mchampanis/ScreenTask/releases)
+## v1.3 release: [Download](https://github.com/mchampanis/ScreenTask/releases)
 
 Screen sharing made easy! Share your screen across local devices without internet.
 
