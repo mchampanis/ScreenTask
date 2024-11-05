@@ -20,10 +20,11 @@ Screen sharing made easy! Share your screen across local devices without interne
 - started cleaning up code
 - cleaned up web ui, removed unneeded header and footer
 - changed javascript timer to behave better on phone browsers
+- memory leak fixed
 
-> Mobile view support [Thanks to Bootstrap 3]
-> .NET Framework 4.8 required [Download here](https://dotnet.microsoft.com/en-us/download/dotnet-framework/net48)
-> Works On Windows Vista, 7, 8, 10, 11 (v1.3 tested only on Windows 11)
+### Requirements
+- .NET Framework 4.8 required [Download here](https://dotnet.microsoft.com/en-us/download/dotnet-framework/net48)
+- Works On Windows Vista, 7, 8, 10, 11 (v1.3 tested only on Windows 11)
 
 ### License
 Screen Task is released under the GPL v3 (or later) license: http://www.gnu.org/licenses/gpl-3.0.html
