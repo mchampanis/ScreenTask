@@ -1,12 +1,12 @@
 # ScreenTask
 ------------------------------
-## v1.3 release: [Info & Download](https://github.com/mchampanis/ScreenTask/releases)
+## v1.3 release: [Download](https://github.com/mchampanis/ScreenTask/releases)
 
 Screen sharing made easy! Share your screen across local devices without internet.
 
 **Cross-Platform Version for (Linux & OSX) Written in Java:** [**Download page**](https://github.com/ahmadomar/ScreenTask)
 
-### List Of Features
+### Features
 - Share your screen on local network
 - WebUI so no additional client software needed - access via web browser
 - Basic HTTP authentication support
@@ -20,10 +20,11 @@ Screen sharing made easy! Share your screen across local devices without interne
 - started cleaning up code
 - cleaned up web ui, removed unneeded header and footer
 - changed javascript timer to behave better on phone browsers
+- memory leak fixed
 
-> Mobile view support [Thanks to Bootstrap 3]
-> .NET Framework 4.8 required [Download here](https://dotnet.microsoft.com/en-us/download/dotnet-framework/net48)
-> Works On Windows Vista, 7, 8, 10, 11 (v1.3 tested only on Windows 11)
+### Requirements
+- .NET Framework 4.8 required [Download here](https://dotnet.microsoft.com/en-us/download/dotnet-framework/net48)
+- Works On Windows Vista, 7, 8, 10, 11 (v1.3 tested only on Windows 11)
 
 ### License
 Screen Task is released under the GPL v3 (or later) license: http://www.gnu.org/licenses/gpl-3.0.html
