@@ -121,10 +121,10 @@
             // 
             this.comboIPs.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboIPs.FormattingEnabled = true;
-            this.comboIPs.Location = new System.Drawing.Point(37, 105);
+            this.comboIPs.Location = new System.Drawing.Point(36, 105);
             this.comboIPs.Margin = new System.Windows.Forms.Padding(4);
             this.comboIPs.Name = "comboIPs";
-            this.comboIPs.Size = new System.Drawing.Size(259, 24);
+            this.comboIPs.Size = new System.Drawing.Size(296, 24);
             this.comboIPs.TabIndex = 27;
             // 
             // cbCaptureMouse
@@ -244,7 +244,7 @@
             this.label2.AutoSize = true;
             this.label2.BackColor = System.Drawing.Color.Transparent;
             this.label2.ForeColor = System.Drawing.Color.White;
-            this.label2.Location = new System.Drawing.Point(331, 108);
+            this.label2.Location = new System.Drawing.Point(341, 108);
             this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(31, 16);
@@ -330,7 +330,7 @@
             // 
             this.comboScreens.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboScreens.FormattingEnabled = true;
-            this.comboScreens.Location = new System.Drawing.Point(66, 148);
+            this.comboScreens.Location = new System.Drawing.Point(64, 148);
             this.comboScreens.Margin = new System.Windows.Forms.Padding(4);
             this.comboScreens.Name = "comboScreens";
             this.comboScreens.Size = new System.Drawing.Size(195, 24);

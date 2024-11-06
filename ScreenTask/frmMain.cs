@@ -363,10 +363,15 @@ namespace ScreenTask {
 
         private void frmMain_Load(object sender, EventArgs e) {
             _ips = GetAllIPv4Addresses();
+
             foreach (var ip in _ips) {
-                comboIPs.Items.Add(ip.Item2 + " - " + ip.Item1);
+                this.comboIPs.Items.Add(ip.Item2 + " - " + ip.Item1);
             }
-            comboIPs.SelectedIndex = comboIPs.Items.Count - 1;
+
+            try {
+                this.comboIPs.SelectedIndex = 1;
+            } catch { }
+
             var recommendedIP = _ips.FirstOrDefault(ip => ip.Item2.StartsWith("192.") || ip.Item2.StartsWith("10."));
             if (recommendedIP != null) {
                 this.comboIPs.SelectedIndex = _ips.IndexOf(recommendedIP);
@@ -387,9 +392,16 @@ namespace ScreenTask {
                     this.numPort.Value = _currentSettings.Port;
                     this.numShotEvery.Value = _currentSettings.ScreenshotsSpeed;
                     this.qualitySlider.Value = _currentSettings.ImageQuality != default ? _currentSettings.ImageQuality : 75;
-                    this.comboIPs.SelectedIndex = _ips.IndexOf(_ips.FirstOrDefault(ip => ip.Item2.Contains(_currentSettings.IP)));
-                    if (_currentSettings.SelectedScreenIndex > -1 && comboScreens.Items.Count > 0 && _currentSettings.SelectedScreenIndex <= comboScreens.Items.Count - 1)
+
+                    var savedIndex = _ips.IndexOf(_ips.FirstOrDefault(ip => ip.Item2.Contains(_currentSettings.IP)));
+
+                    if (savedIndex > 0) {
+                        this.comboIPs.SelectedIndex = savedIndex;
+                    }                    
+
+                    if (_currentSettings.SelectedScreenIndex > -1 && comboScreens.Items.Count > 0 && _currentSettings.SelectedScreenIndex <= comboScreens.Items.Count - 1) {
                         this.comboScreens.SelectedIndex = _currentSettings.SelectedScreenIndex;
+                    }
                 }
             } catch (Exception ex) {
                 MessageBox.Show($"Failed to load local appsettings.xml file.\r\n{ex.Message}", "ScreenTask", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -409,7 +421,11 @@ namespace ScreenTask {
                 _currentSettings.IsPrivateSession = cbPrivate.Checked;
                 _currentSettings.IsAutoStartServerEnabled = cbAutoStart.Checked;
                 _currentSettings.ScreenshotsSpeed = (int)numShotEvery.Value;
-                _currentSettings.IP = _ips.ElementAt(comboIPs.SelectedIndex).Item2;
+
+                try {
+                    _currentSettings.IP = _ips.ElementAt(comboIPs.SelectedIndex).Item2;
+                } catch { }
+                
                 _currentSettings.SelectedScreenIndex = comboScreens.SelectedIndex;
                 _currentSettings.ImageQuality = qualitySlider.Value;
 
