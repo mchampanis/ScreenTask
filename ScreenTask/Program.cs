@@ -14,11 +14,14 @@ namespace ScreenTask {
             using (NotifyIcon icon = frmMain.getIconRef) {
                 icon.Icon = Properties.Resources.iconOff;
                 icon.ContextMenu = new ContextMenu(new MenuItem[] {
-                    new MenuItem("Show ScreenTask", (s, e) => { frmMain.GetForm.Show(); }),
+                    new MenuItem("Show main windcow", (s, e) => { frmMain.GetForm.Show(); }),
+                    new MenuItem("Hide main window", (s, e) => { frmMain.GetForm.Hide(); }),
                     new MenuItem("Exit", (s, e) => { frmMain.GetForm.Shutdown(); }),
                 });
                 icon.Click += new System.EventHandler(showApp);
                 icon.Visible = true;
+
+                frmMain.GetForm.Show();
 
                 Application.Run();
                 icon.Visible = false;

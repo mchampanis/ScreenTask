@@ -109,19 +109,9 @@
             setTimer();
         };
 
-        var lnkAbout = document.getElementById('lnkAbout');
-        var msgAbout = document.getElementById('msgAbout');
-        var closeAbout = document.getElementById('closeAbout');
-        lnkAbout.onclick = function () {
-            msgAbout.className = "alert alert-info alert-dismissable";
-        };
-        closeAbout.onclick = function () {
-            msgAbout.className = "alert alert-info alert-dismissable hidden";
-        };
-
         function requestFullScreen(element) {
             // Supports most browsers and their versions.
-            var requestMethod = element.requestFullScreen || element.webkitRequestFullScreen || element.mozRequestFullScreen || element.msRequestFullScreen;
+            var requestMethod = element.requestFullScreen || element.webkitRequestFullScreen || element.msRequestFullScreen;
 
             if (requestMethod) { // Native full screen.
                 requestMethod.call(element);

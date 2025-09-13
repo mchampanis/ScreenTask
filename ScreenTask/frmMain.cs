@@ -47,7 +47,7 @@ namespace ScreenTask {
             }
 
             comboScreens.SelectedIndex = 0;
-            this.Text = $"ScreenTask v{currentVersion.Major}.{currentVersion.Minor}";
+            this.Text = $"ScreenTask {currentVersion}";
         }
 
         public static frmMain GetForm {
@@ -113,7 +113,7 @@ namespace ScreenTask {
                 btnLaunch.Enabled = true;
                 await StartServer();
 
-            } catch (ObjectDisposedException disObj) {
+            } catch (ObjectDisposedException) {
                 serv = new HttpListener();
                 serv.IgnoreWriteExceptions = true;
             } catch (HttpListenerException httpEx) {
