@@ -5,11 +5,11 @@ using NetFwTypeLib;
 namespace ScreenTask {
     class FirewallConf {
         public void AddRule(
-            String name,
-            String description,
-            String ip,
+            string name,
+            string description,
+            string ip,
             int port,
-            String appname = "ScreenTask"
+            string appname = "ScreenTask"
         ) {
             Type Policy = Type.GetTypeFromProgID("HNetCfg.FwPolicy2");
             INetFwPolicy2 FwPolicy = (INetFwPolicy2)Activator.CreateInstance(Policy);
@@ -29,24 +29,24 @@ namespace ScreenTask {
             //rule.ApplicationName = appname;
             rule.InterfaceTypes = "All";
             rule.Enabled = true;
-            
+
             FwPolicy.Rules.Add(rule);
-            addACL(ip, port);
+            AddACL(ip, port);
         }
 
-        public void addACL(String ip, int port) {
-            runCMD($"netsh http add urlacl url=http://{ip}:{port.ToString()}/ user=Everyone listen=yes", true); 
+        public void AddACL(string ip, int port) {
+            runCMD($"netsh http add urlacl url=http://{ip}:{port}/ user=Everyone listen=yes", true);
         }
 
-        public void delACL(String ip, int port) {
-            runCMD($"netsh http delete urlacl url=http://{ip}:{port.ToString()}/", true);
+        public void DeleteACL(string ip, int port) {
+            runCMD($"netsh http delete urlacl url=http://{ip}:{port}/", true);
         }
 
-        public void DeleteRule(String name, String ip, int port) {
+        public void DeleteRule(string name, string ip, int port) {
             Type Policy = Type.GetTypeFromProgID("HNetCfg.FwPolicy2");
             INetFwPolicy2 FwPolicy = (INetFwPolicy2)Activator.CreateInstance(Policy);
             FwPolicy.Rules.Remove(name);
-            delACL(ip, port);
+            DeleteACL(ip, port);
         }
 
         private string runCMD(string cmd, bool requireAdmin = false) {

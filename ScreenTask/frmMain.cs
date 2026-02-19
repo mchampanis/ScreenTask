@@ -21,10 +21,10 @@ namespace ScreenTask {
 
         private static frmMain instance;
         private bool isWorking;
-        private bool actuallyQuit = false;
-        private String firewallRuleName = "ScreenTask";
+        private bool actuallyQuit;
+        private string firewallRuleName = "ScreenTask";
 
-        private String lastIp = "";
+        private string lastIp = "";
         private int lastPort = -1;
 
         private object locker = new object();
@@ -75,7 +75,7 @@ namespace ScreenTask {
         }
 
         private async void btnStartServer_Click(object sender, EventArgs e) {
-            var ip = _ips.ElementAt(comboIPs.SelectedIndex).Item2.ToString();
+            var ip = _ips.ElementAt(comboIPs.SelectedIndex).Item2;
             var port = (int)numPort.Value;
 
             if (btnStartServer.Tag.ToString() != "start") {
@@ -148,8 +148,8 @@ namespace ScreenTask {
             var ip = _ips.ElementAt(comboIPs.SelectedIndex).Item2;
             var port = (int)numPort.Value;
 
-            var url = string.Format("http://{0}:{1}/", ip, port.ToString());
-            var localUrl = "http://localhost:" + port.ToString() + "/";
+            var url = $"http://{ip}:{port}/";
+            var localUrl = $"http://localhost:{port}/";
 
             txtURL.Text = url;
 
@@ -198,12 +198,12 @@ namespace ScreenTask {
                         continue;
                     } else {
                         var auth1 = ctx.Request.Headers["Authorization"];
-                        auth1 = auth1.Remove(0, 6); // Remove "Basic " from the header value
+                        auth1 = auth1.Remove(0, 6); // remove "Basic " prefix from the header value
                         auth1 = Encoding.UTF8.GetString(Convert.FromBase64String(auth1));
-                        var auth2 = string.Format("{0}:{1}", txtUser.Text, txtPassword.Text);
+                        var auth2 = $"{txtUser.Text}:{txtPassword.Text}";
 
                         if (auth1 != auth2) {
-                            Log(string.Format("Bad login from {0} using {1}", ctx.Request.RemoteEndPoint.Address.ToString(), auth1));
+                            Log($"Bad login from {ctx.Request.RemoteEndPoint.Address} using {auth1}");
                             var errorPage = Encoding.UTF8.GetBytes("<h1 style=\"color:red\">Not authorized</h1><hr><a href=\"./\">Back to home</a>");
                             ctx.Response.ContentType = "text/html";
                             ctx.Response.StatusCode = 401;
@@ -288,18 +288,6 @@ namespace ScreenTask {
             }
             return null;
         }
-        private string GetIPv4Address() {
-            string IP4Address = String.Empty;
-
-            foreach (IPAddress IPA in Dns.GetHostAddresses(Dns.GetHostName())) {
-                if (IPA.AddressFamily == AddressFamily.InterNetwork) {
-                    IP4Address = IPA.ToString();
-                    break;
-                }
-            }
-
-            return IP4Address;
-        }
         private List<Tuple<string, string>> GetAllIPv4Addresses() {
             List<Tuple<string, string>> ipList = new List<Tuple<string, string>>();
             foreach (var ni in NetworkInterface.GetAllNetworkInterfaces()) {
@@ -318,7 +306,7 @@ namespace ScreenTask {
 
                 try {
                     cnf.AddRule(firewallRuleName, "Allow incoming network traffic", ip, port);
-                    Log("ScreenTask rule added to firewall for " + ip + ":" + port.ToString());
+                    Log($"ScreenTask rule added to firewall for {ip}:{port}");
                 } catch (Exception ex) {
                     Log(ex.Message);
                 }
@@ -343,22 +331,12 @@ namespace ScreenTask {
 
         }
         private void cbPrivate_CheckedChanged(object sender, EventArgs e) {
-            if (cbPrivate.Checked == true) {
-                txtUser.Enabled = true;
-                txtPassword.Enabled = true;
-                _currentSettings.IsPrivateSession = true;
-            } else {
-                txtUser.Enabled = false;
-                txtPassword.Enabled = false;
-                _currentSettings.IsPrivateSession = false;
-            }
+            txtUser.Enabled = cbPrivate.Checked;
+            txtPassword.Enabled = cbPrivate.Checked;
+            _currentSettings.IsPrivateSession = cbPrivate.Checked;
         }
         private void cbCaptureMouse_CheckedChanged(object sender, EventArgs e) {
-            if (cbCaptureMouse.Checked) {
-                _currentSettings.IsShowMouseEnabled = true;
-            } else {
-                _currentSettings.IsShowMouseEnabled = false;
-            }
+            _currentSettings.IsShowMouseEnabled = cbCaptureMouse.Checked;
         }
         private void txtLog_TextChanged(object sender, EventArgs e) {
             txtLog.SelectionStart = txtLog.Text.Length;
