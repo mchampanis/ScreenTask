@@ -11,25 +11,25 @@ namespace ScreenTask {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            using (NotifyIcon icon = frmMain.getIconRef) {
+            using (NotifyIcon icon = FrmMain.getIconRef) {
                 icon.Icon = Properties.Resources.iconOff;
                 icon.ContextMenu = new ContextMenu(new MenuItem[] {
-                    new MenuItem("Show main window", (s, e) => { frmMain.GetForm.Show(); }),
-                    new MenuItem("Hide main window", (s, e) => { frmMain.GetForm.Hide(); }),
-                    new MenuItem("Exit", (s, e) => { frmMain.GetForm.Shutdown(); }),
+                    new MenuItem("Show main window", (s, e) => { FrmMain.GetForm.Show(); }),
+                    new MenuItem("Hide main window", (s, e) => { FrmMain.GetForm.Hide(); }),
+                    new MenuItem("Exit", (s, e) => { FrmMain.GetForm.Shutdown(); }),
                 });
-                icon.Click += new System.EventHandler(showApp);
+                icon.Click += new System.EventHandler(ShowApp);
                 icon.Visible = true;
 
-                frmMain.GetForm.Show();
+                FrmMain.GetForm.Show();
 
                 Application.Run();
                 icon.Visible = false;
             }
         }
 
-        static void showApp(object sender, EventArgs e) {
-            frmMain.GetForm.Show();
+        static void ShowApp(object sender, EventArgs e) {
+            FrmMain.GetForm.Show();
         }
 
     }

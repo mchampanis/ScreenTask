@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+using System;
 using System.Drawing;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace ScreenTask
@@ -14,8 +11,8 @@ namespace ScreenTask
         [StructLayout(LayoutKind.Sequential)]
         private struct CURSORINFO
         {
-            public Int32 cbSize;
-            public Int32 flags;
+            public int cbSize;
+            public int flags;
             public IntPtr hCursor;
             public POINTAPI ptScreenPos;
         }
@@ -33,23 +30,23 @@ namespace ScreenTask
         [DllImport("user32.dll", SetLastError = true)]
         private static extern bool DrawIconEx(IntPtr hdc, int xLeft, int yTop, IntPtr hIcon, int cxWidth, int cyHeight, int istepIfAniCur, IntPtr hbrFlickerFreeDraw, int diFlags);
 
-        private const Int32 CURSOR_SHOWING = 0x0001;
-        private const Int32 DI_NORMAL = 0x0003;
+        private const int CURSOR_SHOWING = 0x0001;
+        private const int DI_NORMAL = 0x0003;
 
         public Bitmap CaptureFullScreen(bool captureMouse)
         {
-            var allBounds = Screen.AllScreens.Select(s => s.Bounds).ToArray();
+            Rectangle[] allBounds = Screen.AllScreens.Select(s => s.Bounds).ToArray();
             Rectangle bounds = Rectangle.FromLTRB(allBounds.Min(b => b.Left), allBounds.Min(b => b.Top), allBounds.Max(b => b.Right), allBounds.Max(b => b.Bottom));
 
-            var bitmap = CaptureScreen(bounds, captureMouse);
+            Bitmap bitmap = CaptureScreen(bounds, captureMouse);
             return bitmap;
         }
 
         public Bitmap CapturePrimaryScreen(bool captureMouse)
         {
             Rectangle bounds = Screen.PrimaryScreen.Bounds;
-            
-            var bitmap = CaptureScreen(bounds, captureMouse);
+
+            Bitmap bitmap = CaptureScreen(bounds, captureMouse);
             return bitmap;
         }
 
@@ -57,7 +54,7 @@ namespace ScreenTask
         {
             Rectangle bounds = Screen.AllScreens[screenIndex].Bounds;
 
-            var bitmap = CaptureScreen(bounds, captureMouse);
+            Bitmap bitmap = CaptureScreen(bounds, captureMouse);
             return bitmap;
         }
 

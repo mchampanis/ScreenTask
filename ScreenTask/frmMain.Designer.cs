@@ -1,6 +1,6 @@
 ﻿namespace ScreenTask
 {
-    partial class frmMain
+    partial class FrmMain
     {
         /// <summary>
         /// Required designer variable.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmMain));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmMain));
             this.gbOptions = new System.Windows.Forms.GroupBox();
             this.gbLog = new System.Windows.Forms.GroupBox();
             this.gbPreview = new System.Windows.Forms.GroupBox();
@@ -409,7 +409,7 @@
             this.qualitySlider.SmallChange = 10;
             this.qualitySlider.TabIndex = 42;
             this.qualitySlider.TickFrequency = 25;
-            this.qualitySlider.Value = 75;
+            this.qualitySlider.Value = 90;
             this.qualitySlider.Scroll += new System.EventHandler(this.qualitySlider_Scroll);
             // 
             // lblQuality

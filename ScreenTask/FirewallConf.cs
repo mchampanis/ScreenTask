@@ -8,8 +8,7 @@ namespace ScreenTask {
             string name,
             string description,
             string ip,
-            int port,
-            string appname = "ScreenTask"
+            int port
         ) {
             Type Policy = Type.GetTypeFromProgID("HNetCfg.FwPolicy2");
             INetFwPolicy2 FwPolicy = (INetFwPolicy2)Activator.CreateInstance(Policy);
@@ -26,7 +25,6 @@ namespace ScreenTask {
             rule.RemoteAddresses = "localsubnet";
             rule.Action = NET_FW_ACTION_.NET_FW_ACTION_ALLOW;
             rule.Direction = NET_FW_RULE_DIRECTION_.NET_FW_RULE_DIR_IN;
-            //rule.ApplicationName = appname;
             rule.InterfaceTypes = "All";
             rule.Enabled = true;
 
@@ -35,11 +33,11 @@ namespace ScreenTask {
         }
 
         public void AddACL(string ip, int port) {
-            runCMD($"netsh http add urlacl url=http://{ip}:{port}/ user=Everyone listen=yes", true);
+            RunCMD($"netsh http add urlacl url=http://{ip}:{port}/ user=Everyone listen=yes", true);
         }
 
         public void DeleteACL(string ip, int port) {
-            runCMD($"netsh http delete urlacl url=http://{ip}:{port}/", true);
+            RunCMD($"netsh http delete urlacl url=http://{ip}:{port}/", true);
         }
 
         public void DeleteRule(string name, string ip, int port) {
@@ -49,7 +47,7 @@ namespace ScreenTask {
             DeleteACL(ip, port);
         }
 
-        private string runCMD(string cmd, bool requireAdmin = false) {
+        private string RunCMD(string cmd, bool requireAdmin = false) {
             Process proc = new Process();
 
             proc.StartInfo.FileName = "cmd.exe";

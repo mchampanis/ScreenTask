@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -16,48 +16,49 @@ using System.Windows.Forms;
 using System.Xml.Serialization;
 
 namespace ScreenTask {
-    public partial class frmMain : Form {
-        private ScreenCapturePInvoke screenCapture = new ScreenCapturePInvoke();
+    public partial class FrmMain : Form {
+        private const string APPNAME = "ScreenTask"; // can be whatever
+        private const string APPNAME_SAFE = "ScreenTask"; // mustn't contain spaces or special chars
 
-        private static frmMain instance;
+        private readonly ScreenCapturePInvoke screenCapture = new ScreenCapturePInvoke();
+
+        private static FrmMain instance;
         private bool isWorking;
         private bool actuallyQuit;
-        private string firewallRuleName = "ScreenTask";
+        private readonly string firewallRuleName = APPNAME;
 
         private string lastIp = "";
         private int lastPort = -1;
 
         private object locker = new object();
-        private ReaderWriterLockSlim rwl = new ReaderWriterLockSlim();
+        private readonly ReaderWriterLockSlim rwl = new ReaderWriterLockSlim();
         private List<Tuple<string, string>> _ips;
         HttpListener serv;
-        private Version currentVersion;
+        private readonly Version currentVersion;
         private AppSettings _currentSettings = new AppSettings();
         private static NotifyIcon trayIcon;
         private readonly string _settingsPath = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-            "ScreenTask",
-            "appsettings.xml");
+            APPNAME,
+            "appsettings.xml"
+        );
 
-        public frmMain() {
+        public FrmMain() {
             InitializeComponent();
             currentVersion = Assembly.GetExecutingAssembly().GetName().Version;
-            CheckForIllegalCrossThreadCalls = false; // for visual studio debugging only
-            serv = new HttpListener();
-            serv.IgnoreWriteExceptions = true;
-
-            foreach (var screen in Screen.AllScreens) {
+            CheckForIllegalCrossThreadCalls = false; // for Visual Studio debugging only
+            foreach (Screen screen in Screen.AllScreens) {
                 comboScreens.Items.Add(screen.DeviceName.Replace("\\", "").Replace(".", ""));
             }
 
             comboScreens.SelectedIndex = 0;
-            this.Text = $"ScreenTask {currentVersion}";
+            Text = $"{APPNAME} {currentVersion}";
         }
 
-        public static frmMain GetForm {
+        public static FrmMain GetForm {
             get {
                 if (instance == null || instance.IsDisposed) {
-                    instance = new frmMain();
+                    instance = new FrmMain();
                 }
 
                 return instance;
@@ -75,8 +76,8 @@ namespace ScreenTask {
         }
 
         private async void btnStartServer_Click(object sender, EventArgs e) {
-            var ip = _ips.ElementAt(comboIPs.SelectedIndex).Item2;
-            var port = (int)numPort.Value;
+            string ip = _ips.ElementAt(comboIPs.SelectedIndex).Item2;
+            int port = (int)numPort.Value;
 
             if (btnStartServer.Tag.ToString() != "start") {
                 btnStartServer.Tag = "start";
@@ -86,7 +87,7 @@ namespace ScreenTask {
                 btnLaunch.Enabled = false;
                 trayIcon.Icon = Properties.Resources.iconOff;
 
-                if (serv.IsListening) {
+                if (serv != null && serv.IsListening) {
                     serv.Stop();
                     serv.Close();
                 }
@@ -94,13 +95,14 @@ namespace ScreenTask {
                 Log("Server stopped.");
 
                 await DeleteFirewallRule(ip, port);
-
                 return;
             }
 
             try {
-                serv = new HttpListener();
-                serv.IgnoreWriteExceptions = true;
+                serv = new HttpListener {
+                    IgnoreWriteExceptions = true
+                };
+
                 isWorking = true;
                 Log("Starting server...");
                 numPort.Enabled = false;
@@ -110,16 +112,13 @@ namespace ScreenTask {
                 lastIp = ip;
                 lastPort = port;
 
-                _ = Task.Factory.StartNew(() => CaptureScreenEvery((int)numShotEvery.Value), TaskCreationOptions.LongRunning);
+                _ = Task.Factory.StartNew(() => CaptureScreenEvery(), TaskCreationOptions.LongRunning);
                 btnStartServer.Tag = "stop";
                 btnStartServer.Text = "Stop Server";
                 trayIcon.Icon = Properties.Resources.iconOn;
                 btnLaunch.Enabled = true;
                 await StartServer();
 
-            } catch (ObjectDisposedException) {
-                serv = new HttpListener();
-                serv.IgnoreWriteExceptions = true;
             } catch (HttpListenerException httpEx) {
                 if (httpEx.ErrorCode == 32) // port already in use
                 {
@@ -145,11 +144,11 @@ namespace ScreenTask {
             }
         }
         private async Task StartServer() {
-            var ip = _ips.ElementAt(comboIPs.SelectedIndex).Item2;
-            var port = (int)numPort.Value;
+            string ip = _ips.ElementAt(comboIPs.SelectedIndex).Item2;
+            int port = (int)numPort.Value;
 
-            var url = $"http://{ip}:{port}/";
-            var localUrl = $"http://localhost:{port}/";
+            string url = $"http://{ip}:{port}/";
+            string localUrl = $"http://localhost:{port}/";
 
             txtURL.Text = url;
 
@@ -164,14 +163,20 @@ namespace ScreenTask {
             Log("Localhost URL: " + localUrl);
 
             while (isWorking) {
-                var ctx = await serv.GetContextAsync();
-                var resPath = ctx.Request.Url.LocalPath;
+                HttpListenerContext ctx;
+                try {
+                    ctx = await serv.GetContextAsync();
+                } catch (ObjectDisposedException) {
+                    break; // listener was stopped, exit cleanly
+                }
+
+                string resPath = ctx.Request.Url.LocalPath;
 
                 if (resPath == "/") {
                     resPath += "index.html";
                 }
 
-                var page = Application.StartupPath + "/WebServer" + resPath;
+                string page = Application.StartupPath + "/WebServer" + resPath;
                 bool fileExist;
                 
                 lock (locker) {
@@ -193,7 +198,7 @@ namespace ScreenTask {
                 if (_currentSettings.IsPrivateSession) {
                     if (!ctx.Request.Headers.AllKeys.Contains("Authorization")) {
                         ctx.Response.StatusCode = 401;
-                        ctx.Response.AddHeader("WWW-Authenticate", "Basic realm=ScreenTask");
+                        ctx.Response.AddHeader("WWW-Authenticate", $"Basic realm={APPNAME}");
                         ctx.Response.Close();
                         continue;
                     } else {
@@ -207,7 +212,7 @@ namespace ScreenTask {
                             var errorPage = Encoding.UTF8.GetBytes("<h1 style=\"color:red\">Not authorized</h1><hr><a href=\"./\">Back to home</a>");
                             ctx.Response.ContentType = "text/html";
                             ctx.Response.StatusCode = 401;
-                            ctx.Response.AddHeader("WWW-Authenticate", "Basic realm=ScreenTask");
+                            ctx.Response.AddHeader("WWW-Authenticate", $"Basic realm={APPNAME}");
                             try {
                                 await ctx.Response.OutputStream.WriteAsync(errorPage, 0, errorPage.Length);
                             } catch {
@@ -243,10 +248,10 @@ namespace ScreenTask {
             }
 
         }
-        private async Task CaptureScreenEvery(int msec) {
+        private async Task CaptureScreenEvery() {
             while (isWorking) {
                 TakeScreenshot(_currentSettings.IsShowMouseEnabled);
-                msec = (int)numShotEvery.Value;
+                int msec = (int)numShotEvery.Value;
                 await Task.Delay(msec);
             }
         }
@@ -260,7 +265,7 @@ namespace ScreenTask {
             if (captureMouse) {
                 var bmp = screenCapture.CaptureSelectedScreen(true, comboScreens.SelectedIndex);
                 rwl.EnterWriteLock();
-                bmp.Save(Application.StartupPath + "/WebServer" + "/ScreenTask.jpg", jpgEncoder, encoderParams);
+                bmp.Save(Application.StartupPath + "/WebServer" + $"/{APPNAME_SAFE}.jpg", jpgEncoder, encoderParams);
                 rwl.ExitWriteLock();
 
                 bmp.Dispose();
@@ -275,7 +280,7 @@ namespace ScreenTask {
                 }
                 rwl.EnterWriteLock();
 
-                bitmap.Save(Application.StartupPath + "/WebServer" + "/ScreenTask.jpg", jpgEncoder, encoderParams);
+                bitmap.Save(Application.StartupPath + "/WebServer" + $"/{APPNAME_SAFE}.jpg", jpgEncoder, encoderParams);
                 rwl.ExitWriteLock();
             }
         }
@@ -300,26 +305,26 @@ namespace ScreenTask {
             }
             return ipList;
         }
-        private async Task AddFirewallRule(String ip, int port) {
+        private async Task AddFirewallRule(string ip, int port) {
             await Task.Run(() => {
                 FirewallConf cnf = new FirewallConf();
 
                 try {
                     cnf.AddRule(firewallRuleName, "Allow incoming network traffic", ip, port);
-                    Log($"ScreenTask rule added to firewall for {ip}:{port}");
+                    Log($"{APPNAME_SAFE} rule added to firewall for {ip}:{port}");
                 } catch (Exception ex) {
                     Log(ex.Message);
                 }
             });
         }
 
-        private async Task DeleteFirewallRule(String ip, int port) {
+        private async Task DeleteFirewallRule(string ip, int port) {
             await Task.Run(() => {
                 FirewallConf cnf = new FirewallConf();
 
                 try {
                     cnf.DeleteRule(firewallRuleName, ip, port);
-                    Log("ScreenTask rule removed from firewall");
+                    Log($"{APPNAME_SAFE} rule removed from firewall");
                 } catch (Exception ex) {
                     Log(ex.Message);
                 }
@@ -347,46 +352,46 @@ namespace ScreenTask {
             _ips = GetAllIPv4Addresses();
 
             foreach (var ip in _ips) {
-                this.comboIPs.Items.Add(ip.Item2 + " - " + ip.Item1);
+                comboIPs.Items.Add(ip.Item2 + " - " + ip.Item1);
             }
 
             try {
-                this.comboIPs.SelectedIndex = 1;
+                comboIPs.SelectedIndex = 1;
             } catch { }
 
             var recommendedIP = _ips.FirstOrDefault(ip => ip.Item2.StartsWith("192.") || ip.Item2.StartsWith("10."));
             if (recommendedIP != null) {
-                this.comboIPs.SelectedIndex = _ips.IndexOf(recommendedIP);
+                comboIPs.SelectedIndex = _ips.IndexOf(recommendedIP);
             }
 
             try {
                 if (File.Exists(_settingsPath)) {
                     var serializer = new XmlSerializer(typeof(AppSettings));
-                    using (var appSettingsFile = File.OpenRead(_settingsPath)) {
+                    using (FileStream appSettingsFile = File.OpenRead(_settingsPath)) {
                         _currentSettings = (AppSettings)serializer.Deserialize(appSettingsFile);
                     }
 
-                    this.cbPrivate.Checked = _currentSettings.IsPrivateSession;
-                    this.cbCaptureMouse.Checked = _currentSettings.IsShowMouseEnabled;
-                    this.cbAutoStart.Checked = _currentSettings.IsAutoStartServerEnabled;
-                    this.txtUser.Text = _currentSettings.Username;
-                    this.txtPassword.Text = _currentSettings.Password;
-                    this.numPort.Value = _currentSettings.Port;
-                    this.numShotEvery.Value = _currentSettings.ScreenshotsSpeed;
-                    this.qualitySlider.Value = _currentSettings.ImageQuality != default ? _currentSettings.ImageQuality : 75;
+                    cbPrivate.Checked = _currentSettings.IsPrivateSession;
+                    cbCaptureMouse.Checked = _currentSettings.IsShowMouseEnabled;
+                    cbAutoStart.Checked = _currentSettings.IsAutoStartServerEnabled;
+                    txtUser.Text = _currentSettings.Username;
+                    txtPassword.Text = _currentSettings.Password;
+                    numPort.Value = _currentSettings.Port;
+                    numShotEvery.Value = _currentSettings.ScreenshotsSpeed;
+                    qualitySlider.Value = _currentSettings.ImageQuality != default ? _currentSettings.ImageQuality : 90;
 
-                    var savedIndex = _ips.IndexOf(_ips.FirstOrDefault(ip => ip.Item2.Contains(_currentSettings.IP)));
+                    int savedIndex = _ips.IndexOf(_ips.FirstOrDefault(ip => ip.Item2.Contains(_currentSettings.IP)));
 
                     if (savedIndex > 0) {
-                        this.comboIPs.SelectedIndex = savedIndex;
+                        comboIPs.SelectedIndex = savedIndex;
                     }                    
 
                     if (_currentSettings.SelectedScreenIndex > -1 && comboScreens.Items.Count > 0 && _currentSettings.SelectedScreenIndex <= comboScreens.Items.Count - 1) {
-                        this.comboScreens.SelectedIndex = _currentSettings.SelectedScreenIndex;
+                        comboScreens.SelectedIndex = _currentSettings.SelectedScreenIndex;
                     }
                 }
             } catch (Exception ex) {
-                MessageBox.Show($"Failed to load settings file.\r\n{ex.Message}", "ScreenTask", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Failed to load settings file.\r\n{ex.Message}", APPNAME, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
             if (_currentSettings.IsAutoStartServerEnabled) {
@@ -412,12 +417,12 @@ namespace ScreenTask {
                 _currentSettings.ImageQuality = qualitySlider.Value;
 
                 Directory.CreateDirectory(Path.GetDirectoryName(_settingsPath));
-                using (var appSettingsFile = new FileStream(_settingsPath, FileMode.Create, FileAccess.Write)) {
+                using (FileStream appSettingsFile = new FileStream(_settingsPath, FileMode.Create, FileAccess.Write)) {
                     var serializer = new XmlSerializer(typeof(AppSettings));
                     serializer.Serialize(appSettingsFile, _currentSettings);
                 }
             } catch (Exception ex) {
-                MessageBox.Show($"Cannot save the settings file.\r\n{ex.Message}", "ScreenTask", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Cannot save the settings file.\r\n{ex.Message}", APPNAME, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
             rwl.Dispose();
@@ -449,7 +454,7 @@ namespace ScreenTask {
 
             e.Cancel = true;
 
-            this.Hide();
+            Hide();
         }
     }
 }
