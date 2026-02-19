@@ -1,10 +1,8 @@
 using System;
 
-namespace ScreenTask
-{
+namespace ScreenTask {
     [Serializable]
-    public class AppSettings
-    {
+    public class AppSettings {
         public string IP { get; set; }
         public int Port { get; set; }
         public int ScreenshotsSpeed { get; set; }

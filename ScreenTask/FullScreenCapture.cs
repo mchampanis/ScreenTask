@@ -4,13 +4,10 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
-namespace ScreenTask
-{
-    public class ScreenCapturePInvoke
-    {
+namespace ScreenTask {
+    public class ScreenCapturePInvoke {
         [StructLayout(LayoutKind.Sequential)]
-        private struct CURSORINFO
-        {
+        private struct CURSORINFO {
             public int cbSize;
             public int flags;
             public IntPtr hCursor;
@@ -18,8 +15,7 @@ namespace ScreenTask
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        private struct POINTAPI
-        {
+        private struct POINTAPI {
             public int x;
             public int y;
         }
@@ -33,8 +29,7 @@ namespace ScreenTask
         private const int CURSOR_SHOWING = 0x0001;
         private const int DI_NORMAL = 0x0003;
 
-        public Bitmap CaptureFullScreen(bool captureMouse)
-        {
+        public Bitmap CaptureFullScreen(bool captureMouse) {
             Rectangle[] allBounds = Screen.AllScreens.Select(s => s.Bounds).ToArray();
             Rectangle bounds = Rectangle.FromLTRB(allBounds.Min(b => b.Left), allBounds.Min(b => b.Top), allBounds.Max(b => b.Right), allBounds.Max(b => b.Bottom));
 
@@ -42,41 +37,33 @@ namespace ScreenTask
             return bitmap;
         }
 
-        public Bitmap CapturePrimaryScreen(bool captureMouse)
-        {
+        public Bitmap CapturePrimaryScreen(bool captureMouse) {
             Rectangle bounds = Screen.PrimaryScreen.Bounds;
 
             Bitmap bitmap = CaptureScreen(bounds, captureMouse);
             return bitmap;
         }
 
-        public Bitmap CaptureSelectedScreen(bool captureMouse,int screenIndex=0)
-        {
+        public Bitmap CaptureSelectedScreen(bool captureMouse, int screenIndex = 0) {
             Rectangle bounds = Screen.AllScreens[screenIndex].Bounds;
 
             Bitmap bitmap = CaptureScreen(bounds, captureMouse);
             return bitmap;
         }
 
-        public Bitmap CaptureScreen(Rectangle bounds, bool captureMouse)
-        {
+        public Bitmap CaptureScreen(Rectangle bounds, bool captureMouse) {
             Bitmap result = new Bitmap(bounds.Width, bounds.Height);
 
-            try
-            {
-                using (Graphics g = Graphics.FromImage(result))
-                {
+            try {
+                using (Graphics g = Graphics.FromImage(result)) {
                     g.CopyFromScreen(bounds.Location, Point.Empty, bounds.Size);
 
-                    if (captureMouse)
-                    {
+                    if (captureMouse) {
                         CURSORINFO pci;
                         pci.cbSize = Marshal.SizeOf(typeof(CURSORINFO));
 
-                        if (GetCursorInfo(out pci))
-                        {
-                            if (pci.flags == CURSOR_SHOWING)
-                            {
+                        if (GetCursorInfo(out pci)) {
+                            if (pci.flags == CURSOR_SHOWING) {
                                 var hdc = g.GetHdc();
                                 DrawIconEx(hdc, pci.ptScreenPos.x - bounds.X, pci.ptScreenPos.y - bounds.Y, pci.hCursor, 0, 0, 0, IntPtr.Zero, DI_NORMAL);
                                 g.ReleaseHdc();
@@ -84,9 +71,7 @@ namespace ScreenTask
                         }
                     }
                 }
-            }
-            catch
-            {
+            } catch {
                 result = null;
             }
 

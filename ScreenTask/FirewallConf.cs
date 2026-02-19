@@ -1,20 +1,19 @@
-﻿using System;
+using System;
 using System.Diagnostics;
-using NetFwTypeLib;
 
 namespace ScreenTask {
     class FirewallConf {
+        private const int NET_FW_ACTION_ALLOW = 1;
+        private const int NET_FW_RULE_DIR_IN = 1;
+
         public void AddRule(
             string name,
             string description,
             string ip,
             int port
         ) {
-            Type Policy = Type.GetTypeFromProgID("HNetCfg.FwPolicy2");
-            INetFwPolicy2 FwPolicy = (INetFwPolicy2)Activator.CreateInstance(Policy);
-
-            Type RuleType = Type.GetTypeFromProgID("HNetCfg.FWRule");
-            INetFwRule rule = (INetFwRule)Activator.CreateInstance(RuleType);
+            dynamic fwPolicy = Activator.CreateInstance(Type.GetTypeFromProgID("HNetCfg.FwPolicy2"));
+            dynamic rule = Activator.CreateInstance(Type.GetTypeFromProgID("HNetCfg.FWRule"));
 
             DeleteRule(name, ip, port);
 
@@ -23,12 +22,12 @@ namespace ScreenTask {
             rule.Protocol = 6; // TCP/IP
             rule.LocalPorts = port.ToString();
             rule.RemoteAddresses = "localsubnet";
-            rule.Action = NET_FW_ACTION_.NET_FW_ACTION_ALLOW;
-            rule.Direction = NET_FW_RULE_DIRECTION_.NET_FW_RULE_DIR_IN;
+            rule.Action = NET_FW_ACTION_ALLOW;
+            rule.Direction = NET_FW_RULE_DIR_IN;
             rule.InterfaceTypes = "All";
             rule.Enabled = true;
 
-            FwPolicy.Rules.Add(rule);
+            fwPolicy.Rules.Add(rule);
             AddACL(ip, port);
         }
 
@@ -41,9 +40,8 @@ namespace ScreenTask {
         }
 
         public void DeleteRule(string name, string ip, int port) {
-            Type Policy = Type.GetTypeFromProgID("HNetCfg.FwPolicy2");
-            INetFwPolicy2 FwPolicy = (INetFwPolicy2)Activator.CreateInstance(Policy);
-            FwPolicy.Rules.Remove(name);
+            dynamic fwPolicy = Activator.CreateInstance(Type.GetTypeFromProgID("HNetCfg.FwPolicy2"));
+            fwPolicy.Rules.Remove(name);
             DeleteACL(ip, port);
         }
 
@@ -53,7 +51,7 @@ namespace ScreenTask {
             proc.StartInfo.FileName = "cmd.exe";
             proc.StartInfo.Arguments = "/C " + cmd;
             proc.StartInfo.CreateNoWindow = true;
-            
+
             if (requireAdmin) {
                 proc.StartInfo.UseShellExecute = true;
                 proc.StartInfo.Verb = "runas";

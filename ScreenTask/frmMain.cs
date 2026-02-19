@@ -178,9 +178,9 @@ namespace ScreenTask {
 
                 string page = Application.StartupPath + "/WebServer" + resPath;
                 bool fileExist;
-                
+
                 lock (locker) {
-                   fileExist = File.Exists(page);
+                    fileExist = File.Exists(page);
                 }
 
                 if (!fileExist) {
@@ -232,11 +232,13 @@ namespace ScreenTask {
 
                 var fileinfo = new FileInfo(page);
                 if (fileinfo.Extension == ".css") // content-type must be set for css files or ie will ignore them
+{
                     ctx.Response.ContentType = "text/css";
-                else if (fileinfo.Extension == ".svg")
+                } else if (fileinfo.Extension == ".svg") {
                     ctx.Response.ContentType = "image/svg+xml";
-                else if (fileinfo.Extension == ".html" || fileinfo.Extension == ".htm")
+                } else if (fileinfo.Extension == ".html" || fileinfo.Extension == ".htm") {
                     ctx.Response.ContentType = "text/html"; // content-type must be set for html or chrome renders it as plain text
+                }
 
                 ctx.Response.StatusCode = 200;
                 try {
@@ -384,7 +386,7 @@ namespace ScreenTask {
 
                     if (savedIndex > 0) {
                         comboIPs.SelectedIndex = savedIndex;
-                    }                    
+                    }
 
                     if (_currentSettings.SelectedScreenIndex > -1 && comboScreens.Items.Count > 0 && _currentSettings.SelectedScreenIndex <= comboScreens.Items.Count - 1) {
                         comboScreens.SelectedIndex = _currentSettings.SelectedScreenIndex;
@@ -396,7 +398,7 @@ namespace ScreenTask {
 
             if (_currentSettings.IsAutoStartServerEnabled) {
                 btnStartServer_Click(null, null);
-            }        
+            }
         }
 
         private void frmMain_FormClosing(object sender, FormClosingEventArgs e) {
@@ -412,7 +414,7 @@ namespace ScreenTask {
                 try {
                     _currentSettings.IP = _ips.ElementAt(comboIPs.SelectedIndex).Item2;
                 } catch { }
-                
+
                 _currentSettings.SelectedScreenIndex = comboScreens.SelectedIndex;
                 _currentSettings.ImageQuality = qualitySlider.Value;
 
