@@ -42,7 +42,7 @@ namespace ScreenTask {
         public frmMain() {
             InitializeComponent();
             currentVersion = Assembly.GetExecutingAssembly().GetName().Version;
-            CheckForIllegalCrossThreadCalls = false; // For Visual Studio Debuging Only !
+            CheckForIllegalCrossThreadCalls = false; // for visual studio debugging only
             serv = new HttpListener();
             serv.IgnoreWriteExceptions = true;
 
@@ -121,7 +121,7 @@ namespace ScreenTask {
                 serv = new HttpListener();
                 serv.IgnoreWriteExceptions = true;
             } catch (HttpListenerException httpEx) {
-                if (httpEx.ErrorCode == 32) // port used
+                if (httpEx.ErrorCode == 32) // port already in use
                 {
                     btnStartServer.Tag = "start";
                     btnStartServer.Text = "Start Server";
@@ -179,7 +179,7 @@ namespace ScreenTask {
                 }
 
                 if (!fileExist) {
-                    var errorPage = Encoding.UTF8.GetBytes("<h1 style=\"color:red\">Error 404 , File Not Found </h1><hr><a href=\".\\\">Back to Home</a>");
+                    var errorPage = Encoding.UTF8.GetBytes("<h1 style=\"color:red\">404 - File not found</h1><hr><a href=\"./\">Back to home</a>");
                     ctx.Response.ContentType = "text/html";
                     ctx.Response.StatusCode = 404;
                     try {
@@ -193,7 +193,7 @@ namespace ScreenTask {
                 if (_currentSettings.IsPrivateSession) {
                     if (!ctx.Request.Headers.AllKeys.Contains("Authorization")) {
                         ctx.Response.StatusCode = 401;
-                        ctx.Response.AddHeader("WWW-Authenticate", "Basic realm=ScreenTask Authentication : ");
+                        ctx.Response.AddHeader("WWW-Authenticate", "Basic realm=ScreenTask");
                         ctx.Response.Close();
                         continue;
                     } else {
@@ -203,11 +203,11 @@ namespace ScreenTask {
                         var auth2 = string.Format("{0}:{1}", txtUser.Text, txtPassword.Text);
 
                         if (auth1 != auth2) {
-                            Log(string.Format("Bad Login from {0} using {1}", ctx.Request.RemoteEndPoint.Address.ToString(), auth1));
-                            var errorPage = Encoding.UTF8.GetBytes("<h1 style=\"color:red\">Not Authorized !!! </h1><hr><a href=\"./\">Back to Home</a>");
+                            Log(string.Format("Bad login from {0} using {1}", ctx.Request.RemoteEndPoint.Address.ToString(), auth1));
+                            var errorPage = Encoding.UTF8.GetBytes("<h1 style=\"color:red\">Not authorized</h1><hr><a href=\"./\">Back to home</a>");
                             ctx.Response.ContentType = "text/html";
                             ctx.Response.StatusCode = 401;
-                            ctx.Response.AddHeader("WWW-Authenticate", "Basic realm=ScreenTask Authentication : ");
+                            ctx.Response.AddHeader("WWW-Authenticate", "Basic realm=ScreenTask");
                             try {
                                 await ctx.Response.OutputStream.WriteAsync(errorPage, 0, errorPage.Length);
                             } catch {
@@ -220,18 +220,18 @@ namespace ScreenTask {
 
                 byte[] filedata;
 
-                // Required for One-Time Access of the file {Reader\Writer Problem in OS}
+                // read lock required for concurrent file access
                 rwl.EnterReadLock();
                 filedata = File.ReadAllBytes(page);
                 rwl.ExitReadLock();
 
                 var fileinfo = new FileInfo(page);
-                if (fileinfo.Extension == ".css") // important for IE -> Content-Type must be defiend for CSS files unless will ignored !!!
+                if (fileinfo.Extension == ".css") // content-type must be set for css files or ie will ignore them
                     ctx.Response.ContentType = "text/css";
                 else if (fileinfo.Extension == ".svg")
                     ctx.Response.ContentType = "image/svg+xml";
                 else if (fileinfo.Extension == ".html" || fileinfo.Extension == ".htm")
-                    ctx.Response.ContentType = "text/html"; // Important For Chrome Otherwise will display the HTML as plain text.
+                    ctx.Response.ContentType = "text/html"; // content-type must be set for html or chrome renders it as plain text
 
                 ctx.Response.StatusCode = 200;
                 try {
@@ -408,7 +408,7 @@ namespace ScreenTask {
                     }
                 }
             } catch (Exception ex) {
-                MessageBox.Show($"Failed to load local appsettings.xml file.\r\n{ex.Message}", "ScreenTask", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Failed to load settings file.\r\n{ex.Message}", "ScreenTask", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
             if (_currentSettings.IsAutoStartServerEnabled) {

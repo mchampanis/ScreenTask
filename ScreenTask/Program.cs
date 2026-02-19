@@ -14,7 +14,7 @@ namespace ScreenTask {
             using (NotifyIcon icon = frmMain.getIconRef) {
                 icon.Icon = Properties.Resources.iconOff;
                 icon.ContextMenu = new ContextMenu(new MenuItem[] {
-                    new MenuItem("Show main windcow", (s, e) => { frmMain.GetForm.Show(); }),
+                    new MenuItem("Show main window", (s, e) => { frmMain.GetForm.Show(); }),
                     new MenuItem("Hide main window", (s, e) => { frmMain.GetForm.Hide(); }),
                     new MenuItem("Exit", (s, e) => { frmMain.GetForm.Shutdown(); }),
                 });

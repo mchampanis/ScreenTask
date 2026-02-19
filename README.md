@@ -1,5 +1,5 @@
 # ScreenTask
-------------------------------
+
 ## v1.3.2 released: [download here](https://github.com/mchampanis/ScreenTask/releases)
 
 ## Description
@@ -23,7 +23,7 @@ Screen sharing made easy! Share your screen across local devices without interne
 - Share your screen on local network
 - WebUI so no additional client software needed - access via web browser
 - Basic HTTP authentication support
-- Unlimited number clients
+- Unlimited number of clients
 - Multiple screens support
 
 ### v1.3.2 changes
