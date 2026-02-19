@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -12,6 +12,46 @@
     <style>
         body {
             padding-top: 5px;
+        }
+
+        /* Fullscreen styles */
+        #Viewer:fullscreen,
+        #Viewer:-webkit-full-screen,
+        #Viewer:-moz-full-screen,
+        #Viewer:-ms-fullscreen {
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100vw;
+            height: 100vh;
+            padding: 0;
+            margin: 0;
+        }
+
+        #Viewer:fullscreen .well,
+        #Viewer:-webkit-full-screen .well,
+        #Viewer:-moz-full-screen .well,
+        #Viewer:-ms-fullscreen .well {
+            display: none;
+        }
+
+        #Viewer:fullscreen br,
+        #Viewer:-webkit-full-screen br,
+        #Viewer:-moz-full-screen br,
+        #Viewer:-ms-fullscreen br {
+            display: none;
+        }
+
+        #Viewer:fullscreen #imgPrev,
+        #Viewer:-webkit-full-screen #imgPrev,
+        #Viewer:-moz-full-screen #imgPrev,
+        #Viewer:-ms-fullscreen #imgPrev {
+            max-width: 100vw;
+            max-height: 100vh;
+            width: auto;
+            height: auto;
+            object-fit: contain;
         }
     </style>
 </head>
@@ -110,22 +150,26 @@
         };
 
         function requestFullScreen(element) {
-            // Supports most browsers and their versions.
-            var requestMethod = element.requestFullScreen || element.webkitRequestFullScreen || element.msRequestFullScreen;
-
-            if (requestMethod) { // Native full screen.
-                requestMethod.call(element);
-            } else if (typeof window.ActiveXObject !== "undefined") { // Older IE.
-                var wscript = new ActiveXObject("WScript.Shell");
-                if (wscript !== null) {
-                    wscript.SendKeys("{F11}");
-                }
+            // Standard API (Chrome 71+, Firefox 64+, Safari 16.4+)
+            if (element.requestFullscreen) {
+                element.requestFullscreen();
+            }
+            // Webkit prefix (older Chrome/Safari)
+            else if (element.webkitRequestFullscreen) {
+                element.webkitRequestFullscreen();
+            }
+            // Mozilla prefix (older Firefox)
+            else if (element.mozRequestFullScreen) {
+                element.mozRequestFullScreen();
+            }
+            // MS prefix (IE/Edge Legacy)
+            else if (element.msRequestFullscreen) {
+                element.msRequestFullscreen();
             }
         }
 
         var btnFullscreen = document.getElementById('btnFullscreen');
         btnFullscreen.onclick = function () {
-
             var viewer = document.getElementById('Viewer');
             requestFullScreen(viewer);
         };
