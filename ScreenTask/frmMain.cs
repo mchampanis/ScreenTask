@@ -28,12 +28,16 @@ namespace ScreenTask {
         private int lastPort = -1;
 
         private object locker = new object();
-        private ReaderWriterLock rwl = new ReaderWriterLock();
+        private ReaderWriterLockSlim rwl = new ReaderWriterLockSlim();
         private List<Tuple<string, string>> _ips;
         HttpListener serv;
         private Version currentVersion;
         private AppSettings _currentSettings = new AppSettings();
         private static NotifyIcon trayIcon;
+        private readonly string _settingsPath = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+            "ScreenTask",
+            "appsettings.xml");
 
         public frmMain() {
             InitializeComponent();
@@ -217,9 +221,9 @@ namespace ScreenTask {
                 byte[] filedata;
 
                 // Required for One-Time Access of the file {Reader\Writer Problem in OS}
-                rwl.AcquireReaderLock(Timeout.Infinite);
+                rwl.EnterReadLock();
                 filedata = File.ReadAllBytes(page);
-                rwl.ReleaseReaderLock();
+                rwl.ExitReadLock();
 
                 var fileinfo = new FileInfo(page);
                 if (fileinfo.Extension == ".css") // important for IE -> Content-Type must be defiend for CSS files unless will ignored !!!
@@ -255,9 +259,9 @@ namespace ScreenTask {
             encoderParams.Param[0] = encoderParam;
             if (captureMouse) {
                 var bmp = screenCapture.CaptureSelectedScreen(true, comboScreens.SelectedIndex);
-                rwl.AcquireWriterLock(Timeout.Infinite);
+                rwl.EnterWriteLock();
                 bmp.Save(Application.StartupPath + "/WebServer" + "/ScreenTask.jpg", jpgEncoder, encoderParams);
-                rwl.ReleaseWriterLock();
+                rwl.ExitWriteLock();
 
                 bmp.Dispose();
                 bmp = null;
@@ -269,10 +273,10 @@ namespace ScreenTask {
                 using (Graphics g = Graphics.FromImage(bitmap)) {
                     g.CopyFromScreen(new Point(bounds.X, bounds.Y), Point.Empty, bounds.Size);
                 }
-                rwl.AcquireWriterLock(Timeout.Infinite);
+                rwl.EnterWriteLock();
 
                 bitmap.Save(Application.StartupPath + "/WebServer" + "/ScreenTask.jpg", jpgEncoder, encoderParams);
-                rwl.ReleaseWriterLock();
+                rwl.ExitWriteLock();
             }
         }
         private ImageCodecInfo GetEncoder(ImageFormat format) {
@@ -378,9 +382,9 @@ namespace ScreenTask {
             }
 
             try {
-                if (File.Exists("appsettings.xml")) {
+                if (File.Exists(_settingsPath)) {
                     var serializer = new XmlSerializer(typeof(AppSettings));
-                    using (var appSettingsFile = File.OpenRead("appsettings.xml")) {
+                    using (var appSettingsFile = File.OpenRead(_settingsPath)) {
                         _currentSettings = (AppSettings)serializer.Deserialize(appSettingsFile);
                     }
 
@@ -429,13 +433,16 @@ namespace ScreenTask {
                 _currentSettings.SelectedScreenIndex = comboScreens.SelectedIndex;
                 _currentSettings.ImageQuality = qualitySlider.Value;
 
-                using (var appSettingsFile = new FileStream("appsettings.xml", FileMode.Create, FileAccess.Write)) {
+                Directory.CreateDirectory(Path.GetDirectoryName(_settingsPath));
+                using (var appSettingsFile = new FileStream(_settingsPath, FileMode.Create, FileAccess.Write)) {
                     var serializer = new XmlSerializer(typeof(AppSettings));
                     serializer.Serialize(appSettingsFile, _currentSettings);
                 }
             } catch (Exception ex) {
-                MessageBox.Show($"Cannot save the settings file next to the executable file.\r\n{ex.Message}", "ScreenTask", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Cannot save the settings file.\r\n{ex.Message}", "ScreenTask", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+
+            rwl.Dispose();
         }
 
         private void btnLaunch_Click(object sender, EventArgs e) {
